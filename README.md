@@ -27,7 +27,7 @@ This kit includes **React 19, JavaScript, TailwindCSS 4, and modern UI libraries
 ### 1️⃣ **Installation can be done by laravel installer.**  
 ```bash
 laravel new --using=YazidKHALDI/react-jsx-starter-kit react-jsx-app
-````
+```
 
 ### 2️⃣ **Install Dependencies**  
 ```bash
