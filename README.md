@@ -23,7 +23,7 @@ This kit includes **React 19, JavaScript, TailwindCSS 4, and modern UI libraries
 ---
 
 ## 🛠 Scaffolding Process
-### 1️⃣ **A new project can be created using laravel installer.**  
+### 1️⃣ **Create new React(jsx) project using laravel installer.**  
 ```bash
 laravel new --using=YazidKHALDI/react-jsx-starter-kit react-jsx-app
 ```
