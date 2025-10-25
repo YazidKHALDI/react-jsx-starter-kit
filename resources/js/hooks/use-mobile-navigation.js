@@ -6,4 +6,3 @@ export function useMobileNavigation() {
         document.body.style.removeProperty('pointer-events');
     }, []);
 }
-

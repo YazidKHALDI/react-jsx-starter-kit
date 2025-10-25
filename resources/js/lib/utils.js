@@ -12,4 +12,3 @@ export function isSameUrl(url1, url2) {
 export function resolveUrl(url) {
     return typeof url === 'string' ? url : url.url;
 }
-

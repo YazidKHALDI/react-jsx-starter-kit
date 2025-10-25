@@ -18,16 +18,33 @@ const breadcrumbs = [
     },
 ];
 
-export default function TwoFactor({ requiresConfirmation = false, twoFactorEnabled = false, }) {
-    const { qrCodeSvg, hasSetupData, manualSetupKey, clearSetupData, fetchSetupData, recoveryCodesList, fetchRecoveryCodes, errors, } = useTwoFactorAuth();
+export default function TwoFactor({
+    requiresConfirmation = false,
+    twoFactorEnabled = false,
+}) {
+    const {
+        qrCodeSvg,
+        hasSetupData,
+        manualSetupKey,
+        clearSetupData,
+        fetchSetupData,
+        recoveryCodesList,
+        fetchRecoveryCodes,
+        errors,
+    } = useTwoFactorAuth();
     const [showSetupModal, setShowSetupModal] = useState(false);
 
-    return (<AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Two-Factor Authentication"/>
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Two-Factor Authentication" />
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall title="Two-Factor Authentication" description="Manage your two-factor authentication settings"/>
-                    {twoFactorEnabled ? (<div className="flex flex-col items-start justify-start space-y-4">
+                    <HeadingSmall
+                        title="Two-Factor Authentication"
+                        description="Manage your two-factor authentication settings"
+                    />
+                    {twoFactorEnabled ? (
+                        <div className="flex flex-col items-start justify-start space-y-4">
                             <Badge variant="default">Enabled</Badge>
                             <p className="text-muted-foreground">
                                 With two-factor authentication enabled, you will
@@ -36,16 +53,28 @@ export default function TwoFactor({ requiresConfirmation = false, twoFactorEnabl
                                 TOTP-supported application on your phone.
                             </p>
 
-                            <TwoFactorRecoveryCodes recoveryCodesList={recoveryCodesList} fetchRecoveryCodes={fetchRecoveryCodes} errors={errors}/>
+                            <TwoFactorRecoveryCodes
+                                recoveryCodesList={recoveryCodesList}
+                                fetchRecoveryCodes={fetchRecoveryCodes}
+                                errors={errors}
+                            />
 
                             <div className="relative inline">
                                 <Form {...disable.form()}>
-                                    {({ processing }) => (<Button variant="destructive" type="submit" disabled={processing}>
+                                    {({ processing }) => (
+                                        <Button
+                                            variant="destructive"
+                                            type="submit"
+                                            disabled={processing}
+                                        >
                                             <ShieldBan /> Disable 2FA
-                                        </Button>)}
+                                        </Button>
+                                    )}
                                 </Form>
                             </div>
-                        </div>) : (<div className="flex flex-col items-start justify-start space-y-4">
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-start justify-start space-y-4">
                             <Badge variant="destructive">Disabled</Badge>
                             <p className="text-muted-foreground">
                                 When you enable two-factor authentication, you
@@ -55,21 +84,48 @@ export default function TwoFactor({ requiresConfirmation = false, twoFactorEnabl
                             </p>
 
                             <div>
-                                {hasSetupData ? (<Button onClick={() => setShowSetupModal(true)}>
+                                {hasSetupData ? (
+                                    <Button
+                                        onClick={() => setShowSetupModal(true)}
+                                    >
                                         <ShieldCheck />
                                         Continue Setup
-                                    </Button>) : (<Form {...enable.form()} onSuccess={() => setShowSetupModal(true)}>
-                                        {({ processing }) => (<Button type="submit" disabled={processing}>
+                                    </Button>
+                                ) : (
+                                    <Form
+                                        {...enable.form()}
+                                        onSuccess={() =>
+                                            setShowSetupModal(true)
+                                        }
+                                    >
+                                        {({ processing }) => (
+                                            <Button
+                                                type="submit"
+                                                disabled={processing}
+                                            >
                                                 <ShieldCheck />
                                                 Enable 2FA
-                                            </Button>)}
-                                    </Form>)}
+                                            </Button>
+                                        )}
+                                    </Form>
+                                )}
                             </div>
-                        </div>)}
+                        </div>
+                    )}
 
-                    <TwoFactorSetupModal isOpen={showSetupModal} onClose={() => setShowSetupModal(false)} requiresConfirmation={requiresConfirmation} twoFactorEnabled={twoFactorEnabled} qrCodeSvg={qrCodeSvg} manualSetupKey={manualSetupKey} clearSetupData={clearSetupData} fetchSetupData={fetchSetupData} errors={errors}/>
+                    <TwoFactorSetupModal
+                        isOpen={showSetupModal}
+                        onClose={() => setShowSetupModal(false)}
+                        requiresConfirmation={requiresConfirmation}
+                        twoFactorEnabled={twoFactorEnabled}
+                        qrCodeSvg={qrCodeSvg}
+                        manualSetupKey={manualSetupKey}
+                        clearSetupData={clearSetupData}
+                        fetchSetupData={fetchSetupData}
+                        errors={errors}
+                    />
                 </div>
             </SettingsLayout>
-        </AppLayout>);
+        </AppLayout>
+    );
 }
-

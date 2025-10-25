@@ -16,8 +16,7 @@ export function useClipboard() {
             setCopiedText(text);
 
             return true;
-        }
-        catch (error) {
+        } catch (error) {
             console.warn('Copy failed', error);
             setCopiedText(null);
 
@@ -27,4 +26,3 @@ export function useClipboard() {
 
     return [copiedText, copy];
 }
-

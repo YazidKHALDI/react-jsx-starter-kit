@@ -21,14 +21,16 @@ export const useTwoFactorAuth = () => {
     const [recoveryCodesList, setRecoveryCodesList] = useState([]);
     const [errors, setErrors] = useState([]);
 
-    const hasSetupData = useMemo(() => qrCodeSvg !== null && manualSetupKey !== null, [qrCodeSvg, manualSetupKey]);
+    const hasSetupData = useMemo(
+        () => qrCodeSvg !== null && manualSetupKey !== null,
+        [qrCodeSvg, manualSetupKey],
+    );
 
     const fetchQrCode = useCallback(async () => {
         try {
             const { svg } = await fetchJson(qrCode.url());
             setQrCodeSvg(svg);
-        }
-        catch {
+        } catch {
             setErrors((prev) => [...prev, 'Failed to fetch QR code']);
             setQrCodeSvg(null);
         }
@@ -38,8 +40,7 @@ export const useTwoFactorAuth = () => {
         try {
             const { secretKey: key } = await fetchJson(secretKey.url());
             setManualSetupKey(key);
-        }
-        catch {
+        } catch {
             setErrors((prev) => [...prev, 'Failed to fetch a setup key']);
             setManualSetupKey(null);
         }
@@ -60,8 +61,7 @@ export const useTwoFactorAuth = () => {
             clearErrors();
             const codes = await fetchJson(recoveryCodes.url());
             setRecoveryCodesList(codes);
-        }
-        catch {
+        } catch {
             setErrors((prev) => [...prev, 'Failed to fetch recovery codes']);
             setRecoveryCodesList([]);
         }
@@ -71,8 +71,7 @@ export const useTwoFactorAuth = () => {
         try {
             clearErrors();
             await Promise.all([fetchQrCode(), fetchSetupKey()]);
-        }
-        catch {
+        } catch {
             setQrCodeSvg(null);
             setManualSetupKey(null);
         }
@@ -92,4 +91,3 @@ export const useTwoFactorAuth = () => {
         fetchRecoveryCodes,
     };
 };
-
