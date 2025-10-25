@@ -158,7 +158,7 @@ function SidebarRail({ className, ...props }) {
 }
 
 function SidebarInset({ className, ...props }) {
-    return (<main data-slot="sidebar-inset" className={cn("bg-background relative flex min-h-svh flex-1 flex-col", "peer-data-[variant=inset]:min-h-[calc(100svh-(--spacing(4)))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0", className)} {...props}/>);
+    return (<main data-slot="sidebar-inset" className={cn("bg-background relative flex max-w-full min-h-svh flex-1 flex-col", "peer-data-[variant=inset]:min-h-[calc(100svh-(--spacing(4)))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-0", className)} {...props}/>);
 }
 
 function SidebarInput({ className, ...props }) {
@@ -188,7 +188,7 @@ function SidebarGroup({ className, ...props }) {
 function SidebarGroupLabel({ className, asChild = false, ...props }) {
     const Comp = asChild ? Slot : "div";
 
-    return (<Comp data-slot="sidebar-group-label" data-sidebar="group-label" className={cn("text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0", "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0", className)} {...props}/>);
+    return (<Comp data-slot="sidebar-group-label" data-sidebar="group-label" className={cn("text-sidebar-foreground/70 ring-sidebar-ring flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium outline-hidden transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0", "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 group-data-[collapsible=icon]:select-none group-data-[collapsible=icon]:pointer-events-none", className)} {...props}/>);
 }
 
 function SidebarGroupAction({ className, asChild = false, ...props }) {
@@ -265,16 +265,16 @@ function SidebarMenuBadge({ className, ...props }) {
 }
 
 function SidebarMenuSkeleton({ className, showIcon = false, ...props }) {
-    // Random width between 50 to 90%.
-    const width = React.useMemo(() => {
-        return `${Math.floor(Math.random() * 40) + 50}%`;
-    }, []);
+
+    // wrapping in useState to ensure the width is stable across renders
+    // also ensures we have a stable reference to the style object
+    const [skeletonStyle] = React.useState(() => ({
+        "--skeleton-width": `${Math.floor(Math.random() * 40) + 50}%` // Random width between 50 to 90%.
+    }));
 
     return (<div data-slot="sidebar-menu-skeleton" data-sidebar="menu-skeleton" className={cn("flex h-8 items-center gap-2 rounded-md px-2", className)} {...props}>
       {showIcon && (<Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon"/>)}
-      <Skeleton className="h-4 max-w-(--skeleton-width) flex-1" data-sidebar="menu-skeleton-text" style={{
-            "--skeleton-width": width,
-        }}/>
+      <Skeleton className="h-4 max-w-(--skeleton-width) flex-1" data-sidebar="menu-skeleton-text" style={skeletonStyle}/>
     </div>);
 }
 

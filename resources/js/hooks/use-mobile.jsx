@@ -4,7 +4,7 @@ const MOBILE_BREAKPOINT = 768;
 
 const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
 
-function mediaQueryListener(callback: (event: MediaQueryListEvent) => void) {
+function mediaQueryListener(callback) {
     mql.addEventListener('change', callback);
 
     return () => {
@@ -19,3 +19,4 @@ function isSmallerThanBreakpoint() {
 export function useIsMobile() {
     return useSyncExternalStore(mediaQueryListener, isSmallerThanBreakpoint);
 }
+
