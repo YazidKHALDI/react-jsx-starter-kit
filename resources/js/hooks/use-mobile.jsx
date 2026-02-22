@@ -2,9 +2,15 @@ import { useSyncExternalStore } from 'react';
 
 const MOBILE_BREAKPOINT = 768;
 
-const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+const mql = typeof window === 'undefined'
+    ? undefined
+    : window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
 
 function mediaQueryListener(callback) {
+    if (!mql) {
+        return () => { };
+    }
+
     mql.addEventListener('change', callback);
 
     return () => {
@@ -13,9 +19,14 @@ function mediaQueryListener(callback) {
 }
 
 function isSmallerThanBreakpoint() {
-    return mql.matches;
+    return mql?.matches ?? false;
+}
+
+function getServerSnapshot() {
+    return false;
 }
 
 export function useIsMobile() {
-    return useSyncExternalStore(mediaQueryListener, isSmallerThanBreakpoint);
+    return useSyncExternalStore(mediaQueryListener, isSmallerThanBreakpoint, getServerSnapshot);
 }
+

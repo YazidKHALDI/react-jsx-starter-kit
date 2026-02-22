@@ -1,22 +1,12 @@
-import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { regenerateRecoveryCodes } from '@/routes/two-factor';
 import { Form } from '@inertiajs/react';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from '@/components/ui/card';
 import AlertError from './alert-error';
+import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
-export default function TwoFactorRecoveryCodes({
-    recoveryCodesList,
-    fetchRecoveryCodes,
-    errors,
-}) {
+export default function TwoFactorRecoveryCodes({ recoveryCodesList, fetchRecoveryCodes, errors, }) {
     const [codesAreVisible, setCodesAreVisible] = useState(false);
     const codesSectionRef = useRef(null);
     const canRegenerateCodes = recoveryCodesList.length > 0 && codesAreVisible;
@@ -46,11 +36,10 @@ export default function TwoFactorRecoveryCodes({
 
     const RecoveryCodeIconComponent = codesAreVisible ? EyeOff : Eye;
 
-    return (
-        <Card>
+    return (<Card>
             <CardHeader>
                 <CardTitle className="flex gap-3">
-                    <LockKeyhole className="size-4" aria-hidden="true" />
+                    <LockKeyhole className="size-4" aria-hidden="true"/>
                     2FA Recovery Codes
                 </CardTitle>
                 <CardDescription>
@@ -60,81 +49,26 @@ export default function TwoFactorRecoveryCodes({
             </CardHeader>
             <CardContent>
                 <div className="flex flex-col gap-3 select-none sm:flex-row sm:items-center sm:justify-between">
-                    <Button
-                        onClick={toggleCodesVisibility}
-                        className="w-fit"
-                        aria-expanded={codesAreVisible}
-                        aria-controls="recovery-codes-section"
-                    >
-                        <RecoveryCodeIconComponent
-                            className="size-4"
-                            aria-hidden="true"
-                        />
+                    <Button onClick={toggleCodesVisibility} className="w-fit" aria-expanded={codesAreVisible} aria-controls="recovery-codes-section">
+                        <RecoveryCodeIconComponent className="size-4" aria-hidden="true"/>
                         {codesAreVisible ? 'Hide' : 'View'} Recovery Codes
                     </Button>
 
-                    {canRegenerateCodes && (
-                        <Form
-                            {...regenerateRecoveryCodes.form()}
-                            options={{ preserveScroll: true }}
-                            onSuccess={fetchRecoveryCodes}
-                        >
-                            {({ processing }) => (
-                                <Button
-                                    variant="secondary"
-                                    type="submit"
-                                    disabled={processing}
-                                    aria-describedby="regenerate-warning"
-                                >
+                    {canRegenerateCodes && (<Form {...regenerateRecoveryCodes.form()} options={{ preserveScroll: true }} onSuccess={fetchRecoveryCodes}>
+                            {({ processing }) => (<Button variant="secondary" type="submit" disabled={processing} aria-describedby="regenerate-warning">
                                     <RefreshCw /> Regenerate Codes
-                                </Button>
-                            )}
-                        </Form>
-                    )}
+                                </Button>)}
+                        </Form>)}
                 </div>
-                <div
-                    id="recovery-codes-section"
-                    className={`relative overflow-hidden transition-all duration-300 ${codesAreVisible ? 'h-auto opacity-100' : 'h-0 opacity-0'}`}
-                    aria-hidden={!codesAreVisible}
-                >
+                <div id="recovery-codes-section" className={`relative overflow-hidden transition-all duration-300 ${codesAreVisible ? 'h-auto opacity-100' : 'h-0 opacity-0'}`} aria-hidden={!codesAreVisible}>
                     <div className="mt-3 space-y-3">
-                        {errors?.length ? (
-                            <AlertError errors={errors} />
-                        ) : (
-                            <>
-                                <div
-                                    ref={codesSectionRef}
-                                    className="grid gap-1 rounded-lg bg-muted p-4 font-mono text-sm"
-                                    role="list"
-                                    aria-label="Recovery codes"
-                                >
-                                    {recoveryCodesList.length ? (
-                                        recoveryCodesList.map((code, index) => (
-                                            <div
-                                                key={index}
-                                                role="listitem"
-                                                className="select-text"
-                                            >
+                        {errors?.length ? (<AlertError errors={errors}/>) : (<>
+                                <div ref={codesSectionRef} className="grid gap-1 rounded-lg bg-muted p-4 font-mono text-sm" role="list" aria-label="Recovery codes">
+                                    {recoveryCodesList.length ? (recoveryCodesList.map((code, index) => (<div key={index} role="listitem" className="select-text">
                                                 {code}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div
-                                            className="space-y-2"
-                                            aria-label="Loading recovery codes"
-                                        >
-                                            {Array.from(
-                                                { length: 8 },
-                                                (_, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="h-4 animate-pulse rounded bg-muted-foreground/20"
-                                                        aria-hidden="true"
-                                                    />
-                                                ),
-                                            )}
-                                        </div>
-                                    )}
+                                            </div>))) : (<div className="space-y-2" aria-label="Loading recovery codes">
+                                            {Array.from({ length: 8 }, (_, index) => (<div key={index} className="h-4 animate-pulse rounded bg-muted-foreground/20" aria-hidden="true"/>))}
+                                        </div>)}
                                 </div>
 
                                 <div className="text-xs text-muted-foreground select-none">
@@ -148,11 +82,10 @@ export default function TwoFactorRecoveryCodes({
                                         above.
                                     </p>
                                 </div>
-                            </>
-                        )}
+                            </>)}
                     </div>
                 </div>
             </CardContent>
-        </Card>
-    );
+        </Card>);
 }
+
