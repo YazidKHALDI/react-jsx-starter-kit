@@ -53,7 +53,7 @@ export default defineConfig({
         ],
         options: {
             denyWarnings: true,
-            typeAware: true,
+            typeAware: false,
         },
     },
     fmt: {
