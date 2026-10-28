@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sync laravel/react-starter-kit into this JSX fork.
 #
-# Usage (from a clean `main`):
+# Usage (from a clean `main`, or a branch you want the sync merged into):
 #   scripts/sync-upstream.sh              regular sync
 #   scripts/sync-upstream.sh --baseline   one-time: build upstream-jsx from upstream-ts
 #
@@ -94,8 +94,6 @@ if [ "${1:-}" = "--baseline" ]; then
   exit 0
 fi
 
-[ "$START_BRANCH" = "main" ] || { echo "Run from main."; exit 1; }
-
 git fetch upstream
 OLD="$(git rev-parse upstream-ts)"
 NEW="$(git rev-list --count "$OLD"..upstream/main)"
@@ -122,7 +120,7 @@ git checkout upstream-jsx
 git merge --ff-only "sync/$TODAY"
 git branch -d "sync/$TODAY"
 
-git checkout main
+git checkout "$START_BRANCH"
 git merge upstream-jsx -m "Merge upstream $SHA (converted)" || {
   echo "Resolve conflicts, commit, then verify."
   exit 1
