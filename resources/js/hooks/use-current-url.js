@@ -1,35 +1,45 @@
-import { usePage } from '@inertiajs/react';
-import { toUrl } from '@/lib/utils';
+import { usePage } from "@inertiajs/react";
+import { toUrl } from "@/lib/utils";
 
 export function useCurrentUrl() {
-    const page = usePage();
-    const currentUrlPath = new URL(page.url, window?.location.origin).pathname;
+  const page = usePage();
+  const currentUrlPath = new URL(
+    page.url,
+    typeof window !== "undefined" ? window.location.origin : "http://localhost",
+  ).pathname;
 
-    const isCurrentUrl = (urlToCheck, currentUrl) => {
-        const urlToCompare = currentUrl ?? currentUrlPath;
-        const urlString = toUrl(urlToCheck);
+  const isCurrentUrl = (urlToCheck, currentUrl, startsWith = false) => {
+    const urlToCompare = currentUrl ?? currentUrlPath;
+    const urlString = toUrl(urlToCheck);
 
-        if (!urlString.startsWith('http')) {
-            return urlString === urlToCompare;
-        }
+    const comparePath = (path) =>
+      startsWith ? urlToCompare.startsWith(path) : path === urlToCompare;
 
-        try {
-            const absoluteUrl = new URL(urlString);
-            return absoluteUrl.pathname === urlToCompare;
-        }
-        catch {
-            return false;
-        }
-    };
+    if (!urlString.startsWith("http")) {
+      return comparePath(urlString);
+    }
 
-    const whenCurrentUrl = (urlToCheck, ifTrue, ifFalse = null) => {
-        return isCurrentUrl(urlToCheck) ? ifTrue : ifFalse;
-    };
+    try {
+      const absoluteUrl = new URL(urlString);
 
-    return {
-        currentUrl: currentUrlPath,
-        isCurrentUrl,
-        whenCurrentUrl,
-    };
+      return comparePath(absoluteUrl.pathname);
+    } catch {
+      return false;
+    }
+  };
+
+  const isCurrentOrParentUrl = (urlToCheck, currentUrl) => {
+    return isCurrentUrl(urlToCheck, currentUrl, true);
+  };
+
+  const whenCurrentUrl = (urlToCheck, ifTrue, ifFalse = null) => {
+    return isCurrentUrl(urlToCheck) ? ifTrue : ifFalse;
+  };
+
+  return {
+    currentUrl: currentUrlPath,
+    isCurrentUrl,
+    isCurrentOrParentUrl,
+    whenCurrentUrl,
+  };
 }
-
