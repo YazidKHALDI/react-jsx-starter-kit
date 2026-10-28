@@ -40,13 +40,17 @@ convert_snapshot() {
     -not -path 'resources/js/wayfinder/*' -delete
 
   # Deterministic text patches for files the converter doesn't touch.
-  [ -f vite.config.ts ] && git mv vite.config.ts vite.config.js
-  sed -i "s#resources/js/app\.tsx#resources/js/app.jsx#; s#resources/js/ssr\.tsx#resources/js/ssr.jsx#" vite.config.js
-  sed -i "s#resources/js/app\.tsx#resources/js/app.jsx#; s#{\$page\['component'\]}\.tsx#{\$page['component']}.jsx#" resources/views/app.blade.php
+  # Each is skipped if upstream removed the file.
+  patch() { local f="$1"; shift; if [ -f "$f" ]; then sed -i "$@" "$f"; fi; }
+  if [ -f vite.config.ts ]; then git mv vite.config.ts vite.config.js; fi
+  patch vite.config.js "s#resources/js/app\.tsx#resources/js/app.jsx#; s#resources/js/ssr\.tsx#resources/js/ssr.jsx#"
+  patch resources/views/app.blade.php "s#resources/js/app\.tsx#resources/js/app.jsx#; s#{\$page\['component'\]}\.tsx#{\$page['component']}.jsx#"
   # Page resolvers still reference .tsx after conversion.
-  sed -i "s#\./pages/\${name}\.tsx#./pages/\${name}.jsx#; s#\./pages/\*\*/\*\.tsx#./pages/**/*.jsx#" resources/js/app.jsx resources/js/ssr.jsx
-  sed -i 's#"tsx": true#"tsx": false#' components.json
-  sed -i 's#"name": "laravel/react-starter-kit"#"name": "yazidkhaldi/react-jsx-starter-kit"#' composer.json
+  for f in resources/js/app.jsx resources/js/ssr.jsx; do
+    patch "$f" "s#\./pages/\${name}\.tsx#./pages/\${name}.jsx#; s#\./pages/\*\*/\*\.tsx#./pages/**/*.jsx#"
+  done
+  patch components.json 's#"tsx": true#"tsx": false#'
+  patch composer.json 's#"name": "laravel/react-starter-kit"#"name": "yazidkhaldi/react-jsx-starter-kit"#'
 
   # Drop TypeScript packages by name (new upstream deps still flow through).
   node -e '
@@ -54,14 +58,18 @@ convert_snapshot() {
     const p = JSON.parse(fs.readFileSync("package.json"));
     const rm = ["typescript","typescript-eslint","@types/react","@types/react-dom","@types/node","eslint-import-resolver-typescript"];
     for (const s of ["dependencies","devDependencies"]) for (const k of rm) delete (p[s] || {})[k];
-    if (p.scripts) delete p.scripts.types;
+    if (p.scripts) { delete p.scripts.types; delete p.scripts["types:check"]; }
     p.name = p.name || "react-jsx-starter-kit";
     fs.writeFileSync("package.json", JSON.stringify(p, null, 4) + "\n");
   '
 
   # JS-only tooling configs (ours replace upstream's).
-  [ -f tsconfig.json ] && git rm -q tsconfig.json
-  cp "$OVERRIDES"/* .
+  if [ -f tsconfig.json ]; then git rm -q tsconfig.json; fi
+  # Overrides only replace files upstream still has (never resurrect a deleted file).
+  for f in "$OVERRIDES"/*; do
+    n="$(basename "$f")"
+    if [ "$n" = jsconfig.json ] || [ -f "$n" ]; then cp "$f" "$n"; fi
+  done
 
   if grep -rIn -E '\.tsx?\b' resources/js --exclude-dir=actions --exclude-dir=routes --exclude-dir=wayfinder \
      || grep -In -E '\.tsx?\b' resources/views/app.blade.php vite.config.js components.json eslint.config.js package.json; then
