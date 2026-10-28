@@ -43,6 +43,8 @@ convert_snapshot() {
   [ -f vite.config.ts ] && git mv vite.config.ts vite.config.js
   sed -i "s#resources/js/app\.tsx#resources/js/app.jsx#; s#resources/js/ssr\.tsx#resources/js/ssr.jsx#" vite.config.js
   sed -i "s#resources/js/app\.tsx#resources/js/app.jsx#; s#{\$page\['component'\]}\.tsx#{\$page['component']}.jsx#" resources/views/app.blade.php
+  # Page resolvers still reference .tsx after conversion.
+  sed -i "s#\./pages/\${name}\.tsx#./pages/\${name}.jsx#; s#\./pages/\*\*/\*\.tsx#./pages/**/*.jsx#" resources/js/app.jsx resources/js/ssr.jsx
   sed -i 's#"tsx": true#"tsx": false#' components.json
   sed -i 's#"name": "laravel/react-starter-kit"#"name": "yazidkhaldi/react-jsx-starter-kit"#' composer.json
 
@@ -52,6 +54,7 @@ convert_snapshot() {
     const p = JSON.parse(fs.readFileSync("package.json"));
     const rm = ["typescript","typescript-eslint","@types/react","@types/react-dom","@types/node","eslint-import-resolver-typescript"];
     for (const s of ["dependencies","devDependencies"]) for (const k of rm) delete (p[s] || {})[k];
+    if (p.scripts) delete p.scripts.types;
     p.name = p.name || "react-jsx-starter-kit";
     fs.writeFileSync("package.json", JSON.stringify(p, null, 4) + "\n");
   '
@@ -60,7 +63,8 @@ convert_snapshot() {
   [ -f tsconfig.json ] && git rm -q tsconfig.json
   cp "$OVERRIDES"/* .
 
-  if grep -rIn -E '\.tsx?\b' resources/views vite.config.js components.json eslint.config.js package.json; then
+  if grep -rIn -E '\.tsx?\b' resources/js --exclude-dir=actions --exclude-dir=routes --exclude-dir=wayfinder \
+     || grep -In -E '\.tsx?\b' resources/views/app.blade.php vite.config.js components.json eslint.config.js package.json; then
     echo "WARNING: leftover .ts/.tsx references above - add a patch in convert_snapshot."
   fi
 }
