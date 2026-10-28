@@ -1,0 +1,17 @@
+name: no-typescript
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Fail if TS sources exist
+        run: |
+          FOUND=$(git ls-files 'resources/js/*.ts' 'resources/js/*.tsx')
+          if [ -n "$FOUND" ]; then echo "$FOUND"; exit 1; fi

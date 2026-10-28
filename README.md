@@ -77,3 +77,12 @@ The Laravel + React starter kit is open-sourced software licensed under the MIT 
 Happy coding! 🚀
 
 ⵣ
+## Syncing with upstream (maintainers)
+
+This kit tracks [laravel/react-starter-kit](https://github.com/laravel/react-starter-kit). Every ~30 days run:
+
+```bash
+scripts/sync-upstream.sh
+```
+
+It mirrors upstream into `upstream-ts`, converts it to JSX on `upstream-jsx` (via `tsx-to-jsx-cli`), then merges that into `main`.

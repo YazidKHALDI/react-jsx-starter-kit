@@ -1,0 +1,35 @@
+name: upstream-check
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Count new upstream commits
+        id: count
+        run: |
+          git remote add upstream https://github.com/laravel/react-starter-kit.git
+          git fetch upstream main
+          BASE=$(git rev-parse origin/upstream-ts 2>/dev/null || echo "")
+          if [ -z "$BASE" ]; then echo "count=0" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "count=$(git rev-list --count "$BASE"..upstream/main)" >> "$GITHUB_OUTPUT"
+
+      - name: Open issue
+        if: steps.count.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Upstream sync: ${{ steps.count.outputs.count }} new commit(s)" \
+            --body "laravel/react-starter-kit has new commits. Run \`scripts/sync-upstream.sh\` locally."
