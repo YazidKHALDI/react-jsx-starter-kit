@@ -81,7 +81,7 @@ convert_snapshot() {
 
 # Replace the working tree with the tree of $1 (including deletions).
 checkout_tree_of() {
-  git rm -rfq . && git clean -fdq
+  git rm -rfq .  # no `git clean`: with .gitignore removed it would delete vendor/, .env, node_modules
   git checkout "$1" -- .
 }
 
