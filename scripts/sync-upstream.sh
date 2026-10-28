@@ -49,6 +49,8 @@ convert_snapshot() {
   for f in resources/js/app.jsx resources/js/ssr.jsx; do
     patch "$f" "s#\./pages/\${name}\.tsx#./pages/\${name}.jsx#; s#\./pages/\*\*/\*\.tsx#./pages/**/*.jsx#"
   done
+  # Type-aware linting needs TypeScript; a JSX project has no type info.
+  patch vite.config.js 's#typeAware: true#typeAware: false#'
   patch components.json 's#"tsx": true#"tsx": false#'
   patch composer.json 's#"name": "laravel/react-starter-kit"#"name": "yazidkhaldi/react-jsx-starter-kit"#'
 
