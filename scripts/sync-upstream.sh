@@ -64,7 +64,7 @@ convert_snapshot() {
   '
 
   # JS-only tooling configs (ours replace upstream's).
-  if [ -f tsconfig.json ]; then git rm -q tsconfig.json; fi
+  if [ -f tsconfig.json ]; then git rm -qf tsconfig.json; fi
   # Overrides only replace files upstream still has (never resurrect a deleted file).
   for f in "$OVERRIDES"/*; do
     n="$(basename "$f")"
