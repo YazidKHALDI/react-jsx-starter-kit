@@ -51,6 +51,8 @@ convert_snapshot() {
   done
   # Type-aware linting needs TypeScript; a JSX project has no type info.
   patch vite.config.js 's#typeAware: true#typeAware: false#'
+  # ci:check runs the npm TypeScript check (tsc); composer's own types:check is PHPStan and stays.
+  patch composer.json '/"npm run types:check",/d'
   patch components.json 's#"tsx": true#"tsx": false#'
   patch composer.json 's#"name": "laravel/react-starter-kit"#"name": "yazidkhaldi/react-jsx-starter-kit"#'
 
