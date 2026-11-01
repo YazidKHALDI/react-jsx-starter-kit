@@ -29,6 +29,8 @@ jobs:
         if: steps.count.outputs.count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
+          # The `upstream` remote added above would otherwise make gh target laravel/react-starter-kit.
+          GH_REPO: ${{ github.repository }}
         run: |
           gh issue create \
             --title "Upstream sync: ${{ steps.count.outputs.count }} new commit(s)" \
