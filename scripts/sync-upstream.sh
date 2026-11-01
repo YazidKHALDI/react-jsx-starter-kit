@@ -99,10 +99,13 @@ if [ "${1:-}" = "--baseline" ]; then
 fi
 
 git fetch upstream
-OLD="$(git rev-parse upstream-ts)"
+# "Done" = what upstream-jsx last converted (its commit messages carry the upstream SHA),
+# NOT upstream-ts: upstream-ts moves first, so a failed run would leave it looking synced.
+OLD="$(git log upstream-jsx --format=%s | grep -oE 'pstream [0-9a-f]{7,40}' | head -1 | cut -d' ' -f2)"
+[ -n "$OLD" ] || { echo "Cannot find last synced upstream SHA in upstream-jsx history."; exit 1; }
 NEW="$(git rev-list --count "$OLD"..upstream/main)"
 [ "$NEW" -gt 0 ] || { echo "Already up to date with upstream."; exit 0; }
-echo "Upstream has $NEW new commit(s)."
+echo "Upstream has $NEW new commit(s) since $OLD."
 
 git checkout upstream-ts
 git merge --ff-only upstream/main
